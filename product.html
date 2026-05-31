@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kelolain – Produk</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --green-dark: #0d4a35;
+        --green-main: #1a6644;
+        --green-mid: #1f7a52;
+        --green-light: #d4ede3;
+        --green-pale: #eef7f3;
+        --accent: #2ecc8f;
+        --red-main: #e53935;
+        --red-pale: #fff0f0;
+        --text-dark: #0f1f18;
+        --text-muted: #6b8a7a;
+        --bg: #f5f7f6;
+        --sidebar-w: 230px;
+        --white: #ffffff;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text-dark);
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* ── SIDEBAR ── */
+      .sidebar {
+        width: var(--sidebar-w);
+        min-width: var(--sidebar-w);
+        background: var(--white);
+        border-right: 1px solid #e2ece7;
+        display: flex;
+        flex-direction: column;
+        padding: 28px 16px 20px;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 100;
+      }
+      .sidebar-brand {
+        margin-bottom: 36px;
+        padding: 0 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .brand-icon {
+        width: 36px;
+        height: 36px;
+        background: var(--green-main);
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1rem;
+      }
+      .sidebar-brand h2 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--green-dark);
+        line-height: 1.1;
+      }
+      .sidebar-brand span {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        letter-spacing: 0.03em;
+      }
+      .nav-menu {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        cursor: pointer;
+        text-decoration: none;
+        transition:
+          background 0.18s,
+          color 0.18s;
+      }
+      .nav-item i {
+        font-size: 1.05rem;
+      }
+      .nav-item:hover {
+        background: var(--green-pale);
+        color: var(--green-dark);
+      }
+      .nav-item.active {
+        background: var(--green-pale);
+        color: var(--green-dark);
+      }
+      .nav-item.active i {
+        color: var(--green-mid);
+      }
+
+      /* Upgrade card */
+      .upgrade-card {
+        background: var(--green-pale);
+        border: 1px solid var(--green-light);
+        border-radius: 14px;
+        padding: 16px;
+        margin-top: auto;
+      }
+      .upgrade-label {
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+      }
+      .upgrade-card h6 {
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: var(--green-dark);
+        margin-bottom: 10px;
+        line-height: 1.4;
+      }
+      .btn-upgrade {
+        width: 100%;
+        background: var(--green-dark);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        padding: 9px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .btn-upgrade:hover {
+        background: var(--green-mid);
+      }
+
+      /* ── MAIN ── */
+      .main {
+        margin-left: var(--sidebar-w);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* Topbar */
+      .topbar {
+        background: var(--white);
+        border-bottom: 1px solid #e2ece7;
+        padding: 12px 28px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .search-wrap {
+        flex: 1;
+        position: relative;
+      }
+      .search-wrap i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
+      .search-input {
+        width: 100%;
+        border: 1.5px solid #e2ece7;
+        border-radius: 10px;
+        padding: 9px 14px 9px 38px;
+        font-size: 0.87rem;
+        font-family: inherit;
+        background: var(--bg);
+        color: var(--text-dark);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .search-input:focus {
+        border-color: var(--green-mid);
+        background: var(--white);
+      }
+      .topbar-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background 0.18s;
+      }
+      .topbar-icon:hover {
+        background: var(--green-pale);
+      }
+      .topbar-divider {
+        width: 1px;
+        height: 28px;
+        background: #dde8e3;
+      }
+      .user-info {
+        text-align: right;
+      }
+      .user-info .name {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+      .user-info .role {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+      }
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--green-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: var(--green-dark);
+      }
+
+      /* Content */
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 28px 28px 40px;
+      }
+      .content::-webkit-scrollbar {
+        width: 5px;
+      }
+      .content::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .content::-webkit-scrollbar-thumb {
+        background: #ccddd5;
+        border-radius: 10px;
+      }
+
+      /* Page header */
+      .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .page-header h1 {
+        font-size: 1.75rem;
+        font-weight: 800;
+      }
+      .page-header p {
+        font-size: 0.88rem;
+        color: var(--text-muted);
+        margin-top: 4px;
+      }
+      .btn-tambah {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--green-dark);
+        color: var(--white);
+        border: none;
+        border-radius: 10px;
+        padding: 11px 22px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition:
+          background 0.2s,
+          transform 0.15s;
+        white-space: nowrap;
+      }
+      .btn-tambah:hover {
+        background: var(--green-mid);
+        transform: translateY(-1px);
+      }
+
+      /* Filter bar */
+      .filter-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .filter-tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .filter-tab {
+        padding: 7px 20px;
+        border-radius: 20px;
+        border: 1.5px solid #ccddd5;
+        background: var(--white);
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.18s;
+      }
+      .filter-tab:hover {
+        border-color: var(--green-mid);
+        color: var(--green-dark);
+      }
+      .filter-tab.active {
+        background: var(--green-pale);
+        border-color: var(--green-mid);
+        color: var(--green-dark);
+      }
+      .sort-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+      .sort-btn:hover {
+        color: var(--green-dark);
+      }
+
+      /* Product grid */
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 28px;
+      }
+      @media (max-width: 1100px) {
+        .product-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      @media (max-width: 800px) {
+        .product-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      /* Product card */
+      .product-card {
+        background: var(--white);
+        border-radius: 14px;
+        border: 1px solid #e2ece7;
+        overflow: hidden;
+        transition:
+          box-shadow 0.22s,
+          transform 0.22s;
+      }
+      .product-card:hover {
+        box-shadow: 0 8px 32px rgba(13, 74, 53, 0.1);
+        transform: translateY(-3px);
+      }
+      .card-img-wrap {
+        position: relative;
+        height: 170px;
+        overflow: hidden;
+        background: #c8ddd5;
+      }
+      .card-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.35s;
+      }
+      .product-card:hover .card-img-wrap img {
+        transform: scale(1.04);
+      }
+
+      /* Image placeholder */
+      .img-ph {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .ph-kopi {
+        background: linear-gradient(135deg, #1a6644, #2ecc8f);
+      }
+      .ph-minuman {
+        background: linear-gradient(135deg, #2980b9, #6dd5fa);
+      }
+      .ph-makanan {
+        background: linear-gradient(135deg, #c0392b, #f39c12);
+      }
+      .ph-alat {
+        background: linear-gradient(135deg, #34495e, #7f8c8d);
+      }
+
+      .cat-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: var(--green-dark);
+        color: var(--white);
+        font-size: 0.68rem;
+        font-weight: 700;
+        border-radius: 20px;
+        padding: 3px 10px;
+        letter-spacing: 0.04em;
+      }
+
+      /* Card body */
+      .card-body-custom {
+        padding: 14px 16px 16px;
+      }
+      .prod-name {
+        font-size: 1rem;
+        font-weight: 800;
+        margin-bottom: 2px;
+      }
+      .prod-sku {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+      }
+      .price-row {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .price-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-bottom: 2px;
+      }
+      .price-value {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--green-mid);
+      }
+      .stock-wrap {
+        text-align: right;
+      }
+      .stock-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-bottom: 2px;
+      }
+      .stock-value {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+      .stock-low {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--red-main);
+      }
+
+      /* Card actions */
+      .card-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .btn-detail {
+        flex: 1;
+        border: 1.5px solid #d0e4da;
+        background: var(--white);
+        border-radius: 8px;
+        padding: 7px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        cursor: pointer;
+        transition:
+          background 0.18s,
+          border-color 0.18s;
+      }
+      .btn-detail:hover {
+        background: var(--green-pale);
+        border-color: var(--green-mid);
+      }
+      .btn-edit {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: 1.5px solid #d0e4da;
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition:
+          background 0.18s,
+          color 0.18s,
+          border-color 0.18s;
+      }
+      .btn-edit:hover {
+        background: var(--green-pale);
+        color: var(--green-dark);
+        border-color: var(--green-mid);
+      }
+
+      /* Add new card */
+      .add-card {
+        background: var(--white);
+        border-radius: 14px;
+        border: 2px dashed #c5ddd2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 320px;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+        text-decoration: none;
+        color: inherit;
+      }
+      .add-card:hover {
+        border-color: var(--green-mid);
+        background: var(--green-pale);
+      }
+      .add-circle {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: #e6f4ed;
+        border: 2px solid #c5ddd2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        color: var(--text-muted);
+        margin-bottom: 14px;
+        transition:
+          background 0.2s,
+          border-color 0.2s,
+          color 0.2s;
+      }
+      .add-card:hover .add-circle {
+        background: var(--green-pale);
+        border-color: var(--green-mid);
+        color: var(--green-mid);
+      }
+      .add-card h6 {
+        font-size: 1rem;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+      .add-card p {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        text-align: center;
+        max-width: 130px;
+        line-height: 1.5;
+      }
+
+      /* Pagination */
+      .table-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 4px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .table-footer span {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+      }
+      .pagination-wrap {
+        display: flex;
+        gap: 6px;
+      }
+      .pg-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        border: 1.5px solid #ccddd5;
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.84rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          background 0.18s,
+          color 0.18s,
+          border-color 0.18s;
+        color: var(--text-muted);
+      }
+      .pg-btn:hover {
+        background: var(--green-pale);
+        border-color: var(--green-mid);
+        color: var(--green-dark);
+      }
+      .pg-btn.active {
+        background: var(--green-dark);
+        border-color: var(--green-dark);
+        color: var(--white);
+      }
+      .pg-btn.arrow {
+        font-size: 0.75rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ══════════════ SIDEBAR ══════════════ -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon"><i class="bi bi-box-seam-fill"></i></div>
+        <div>
+          <h2>Kelolain</h2>
+          <span>Business Management</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <a href="kelolain-dashboard.html" class="nav-item">
+          <i class="bi bi-grid-1x2-fill"></i> Dashboard
+        </a>
+        <a href="#" class="nav-item">
+          <i class="bi bi-bar-chart-line-fill"></i> Laporan
+        </a>
+        <a href="#" class="nav-item">
+          <i class="bi bi-receipt"></i> Riwayat Transaksi
+        </a>
+        <a href="#" class="nav-item active">
+          <i class="bi bi-box-seam-fill"></i> Produk
+        </a>
+        <a href="#" class="nav-item">
+          <i class="bi bi-person-circle"></i> Profile
+        </a>
+      </nav>
+
+      <div class="upgrade-card">
+        <div class="upgrade-label">Tingkatkan Bisnis</div>
+        <h6>Paket Enterprise kini tersedia!</h6>
+        <button class="btn-upgrade">Upgrade Plan</button>
+      </div>
+    </aside>
+
+    <!-- ══════════════ MAIN ══════════════ -->
+    <div class="main">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="search-wrap">
+          <i class="bi bi-search"></i>
+          <input type="text" class="search-input" placeholder="Cari produk" />
+        </div>
+        <div class="topbar-icon"><i class="bi bi-bell"></i></div>
+        <div class="topbar-icon"><i class="bi bi-gear"></i></div>
+        <div class="topbar-divider"></div>
+        <div class="user-info">
+          <div class="name">Josep Abduloh</div>
+          <div class="role">Penjual</div>
+        </div>
+        <div class="avatar">JA</div>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h1>Produk</h1>
+            <p>Kelola inventaris dan stok ketersediaan barang Anda.</p>
+          </div>
+          <button class="btn-tambah">
+            <i class="bi bi-plus-circle-fill"></i> Tambah Produk
+          </button>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="filter-tabs">
+            <button class="filter-tab active">Semua</button>
+            <button class="filter-tab">Kopi</button>
+            <button class="filter-tab">Makanan</button>
+            <button class="filter-tab">Alat</button>
+          </div>
+          <button class="sort-btn">
+            <i class="bi bi-filter-left"></i> Urutkan: Terbaru
+          </button>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="product-grid">
+          <!-- 1. Arabica Gayo Special -->
+          <div class="product-card">
+            <div class="card-img-wrap">
+              <div class="img-ph ph-kopi">
+                <i class="bi bi-cup-hot-fill"></i>
+              </div>
+              <span class="cat-badge">Kopi</span>
+            </div>
+            <div class="card-body-custom">
+              <div class="prod-name">Arabica Gayo Special</div>
+              <div class="prod-sku">SKU: AG-001</div>
+              <div class="price-row">
+                <div>
+                  <div class="price-label">Harga Jual</div>
+                  <div class="price-value">Rp 85.000</div>
+                </div>
+                <div class="stock-wrap">
+                  <div class="stock-label">Stok</div>
+                  <div class="stock-value">42 pcs</div>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="btn-detail">Detail</button>
+                <button class="btn-edit"><i class="bi bi-pencil"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Caramel Macchiato -->
+          <div class="product-card">
+            <div class="card-img-wrap">
+              <div class="img-ph ph-minuman">
+                <i class="bi bi-cup-straw"></i>
+              </div>
+              <span class="cat-badge">Minuman</span>
+            </div>
+            <div class="card-body-custom">
+              <div class="prod-name">Caramel Macchiato</div>
+              <div class="prod-sku">SKU: CM-022</div>
+              <div class="price-row">
+                <div>
+                  <div class="price-label">Harga Jual</div>
+                  <div class="price-value">
+                    Rp 38.000 <span class="stock-low">Low: 5 pcs</span>
+                  </div>
+                </div>
+                <div class="stock-wrap">
+                  <div class="stock-label">Stok</div>
+                  <div class="stock-value" style="color: var(--red-main)">
+                    5 pcs
+                  </div>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="btn-detail">Detail</button>
+                <button class="btn-edit"><i class="bi bi-pencil"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Artisan Croissant -->
+          <div class="product-card">
+            <div class="card-img-wrap">
+              <div class="img-ph ph-makanan">
+                <i class="bi bi-basket2-fill"></i>
+              </div>
+              <span class="cat-badge">Makanan</span>
+            </div>
+            <div class="card-body-custom">
+              <div class="prod-name">Artisan Croissant</div>
+              <div class="prod-sku">SKU: FD-091</div>
+              <div class="price-row">
+                <div>
+                  <div class="price-label">Harga Jual</div>
+                  <div class="price-value">Rp 24.000</div>
+                </div>
+                <div class="stock-wrap">
+                  <div class="stock-label">Stok</div>
+                  <div class="stock-value">18 pcs</div>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="btn-detail">Detail</button>
+                <button class="btn-edit"><i class="bi bi-pencil"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Manual Grinder Pro -->
+          <div class="product-card">
+            <div class="card-img-wrap">
+              <div class="img-ph ph-alat">
+                <i class="bi bi-gear-wide-connected"></i>
+              </div>
+              <span class="cat-badge">Alat</span>
+            </div>
+            <div class="card-body-custom">
+              <div class="prod-name">Manual Grinder Pro</div>
+              <div class="prod-sku">SKU: TL-505</div>
+              <div class="price-row">
+                <div>
+                  <div class="price-label">Harga Jual</div>
+                  <div class="price-value">Rp 1.250.000</div>
+                </div>
+                <div class="stock-wrap">
+                  <div class="stock-label">Stok</div>
+                  <div class="stock-value">12 pcs</div>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="btn-detail">Detail</button>
+                <button class="btn-edit"><i class="bi bi-pencil"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Matte Ceramic Mug -->
+          <div class="product-card">
+            <div class="card-img-wrap">
+              <div class="img-ph ph-alat"><i class="bi bi-cup-fill"></i></div>
+              <span class="cat-badge">Alat</span>
+            </div>
+            <div class="card-body-custom">
+              <div class="prod-name">Matte Ceramic Mug</div>
+              <div class="prod-sku">SKU: TL-102</div>
+              <div class="price-row">
+                <div>
+                  <div class="price-label">Harga Jual</div>
+                  <div class="price-value">Rp 45.000</div>
+                </div>
+                <div class="stock-wrap">
+                  <div class="stock-label">Stok</div>
+                  <div class="stock-value">56 pcs</div>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="btn-detail">Detail</button>
+                <button class="btn-edit"><i class="bi bi-pencil"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Tropical Fruit Salad -->
+          <div class="product-card">
+            <div class="card-img-wrap">
+              <div class="img-ph ph-makanan">
+                <i class="bi bi-egg-fried"></i>
+              </div>
+              <span class="cat-badge">Makanan</span>
+            </div>
+            <div class="card-body-custom">
+              <div class="prod-name">Tropical Fruit Salad</div>
+              <div class="prod-sku">SKU: FD-210</div>
+              <div class="price-row">
+                <div>
+                  <div class="price-label">Harga Jual</div>
+                  <div class="price-value">Rp 32.000</div>
+                </div>
+                <div class="stock-wrap">
+                  <div class="stock-label">Stok</div>
+                  <div class="stock-value">25 pcs</div>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="btn-detail">Detail</button>
+                <button class="btn-edit"><i class="bi bi-pencil"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. Add New Product -->
+          <a href="#" class="add-card">
+            <div class="add-circle"><i class="bi bi-plus-lg"></i></div>
+            <h6>Produk Baru</h6>
+            <p>Klik untuk menambahkan produk ke katalog Anda</p>
+          </a>
+        </div>
+        <!-- /product-grid -->
+
+        <!-- Pagination -->
+        <div class="table-footer">
+          <span>Menampilkan 1 – 6 dari 48 produk</span>
+          <div class="pagination-wrap">
+            <button class="pg-btn arrow">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">2</button>
+            <button class="pg-btn">3</button>
+            <button class="pg-btn arrow">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- /content -->
+    </div>
+    <!-- /main -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Filter tabs
+      document.querySelectorAll(".filter-tab").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".filter-tab")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+        });
+      });
+
+      // Pagination
+      document.querySelectorAll(".pg-btn:not(.arrow)").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".pg-btn:not(.arrow)")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+        });
+      });
+    </script>
+  </body>
+</html>
