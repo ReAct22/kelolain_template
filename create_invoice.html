@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kelolain – Buat Invoice Baru</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    :root {
+      --green-dark:  #0d4a35;
+      --green-main:  #1a6644;
+      --green-mid:   #1f7a52;
+      --green-light: #d4ede3;
+      --green-pale:  #eef7f3;
+      --text-dark:   #0f1f18;
+      --text-muted:  #6b8a7a;
+      --border:      #e2ece7;
+      --bg:          #f5f7f6;
+      --sidebar-w:   230px;
+      --white:       #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-dark);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 16px 20px;
+      height: 100vh;
+      position: fixed;
+      left: 0; top: 0; z-index: 100;
+    }
+    .sidebar-brand { margin-bottom: 36px; padding: 0 8px; }
+    .sidebar-brand h2 { font-size: 1.2rem; font-weight: 800; color: var(--green-dark); line-height: 1.1; }
+    .sidebar-brand span { font-size: .68rem; font-weight: 600; color: var(--text-muted); }
+    .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 11px;
+      padding: 10px 14px; border-radius: 10px;
+      font-size: .88rem; font-weight: 600; color: var(--text-muted);
+      cursor: pointer; text-decoration: none; transition: background .18s, color .18s;
+    }
+    .nav-item i { font-size: 1rem; }
+    .nav-item:hover { background: var(--green-pale); color: var(--green-dark); }
+    .nav-item.active { background: var(--green-pale); color: var(--green-dark); }
+    .nav-divider { height: 1px; background: var(--border); margin: 10px 8px; }
+    .upgrade-card {
+      background: var(--green-pale); border: 1px solid var(--green-light);
+      border-radius: 14px; padding: 14px 16px; margin-bottom: 0;
+    }
+    .upgrade-label { font-size: .62rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
+    .upgrade-card h6 { font-size: .84rem; font-weight: 800; color: var(--green-dark); margin-bottom: 11px; line-height: 1.4; }
+    .btn-upgrade { width: 100%; background: var(--green-dark); color: var(--white); border: none; border-radius: 8px; padding: 8px; font-size: .8rem; font-weight: 700; cursor: pointer; transition: background .2s; }
+    .btn-upgrade:hover { background: var(--green-mid); }
+    .nav-bottom { display: flex; flex-direction: column; gap: 3px; }
+
+    /* ── MAIN ── */
+    .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    /* Topbar */
+    .topbar {
+      background: var(--white); border-bottom: 1px solid var(--border);
+      padding: 12px 28px; display: flex; align-items: center; gap: 14px;
+    }
+    .topbar-right { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+    .topbar-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1.05rem; cursor: pointer; transition: background .18s; }
+    .topbar-icon:hover { background: var(--green-pale); }
+    .topbar-divider { width: 1px; height: 28px; background: #dde8e3; }
+    .user-info { text-align: right; }
+    .user-info .name { font-size: .85rem; font-weight: 700; }
+    .user-info .role { font-size: .7rem; color: var(--text-muted); }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .78rem; color: var(--green-dark); }
+
+    /* Content */
+    .content { flex: 1; overflow-y: auto; padding: 24px 28px 40px; }
+    .content::-webkit-scrollbar { width: 5px; }
+    .content::-webkit-scrollbar-thumb { background: #ccddd5; border-radius: 10px; }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+    }
+    .page-header-left { display: flex; align-items: center; gap: 14px; }
+    .back-btn {
+      width: 38px; height: 38px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-dark); font-size: 1rem; cursor: pointer;
+      text-decoration: none; transition: background .18s, border-color .18s; flex-shrink: 0;
+    }
+    .back-btn:hover { background: var(--green-pale); border-color: var(--green-mid); color: var(--green-dark); }
+    .page-header h1 { font-size: 1.5rem; font-weight: 800; line-height: 1.1; }
+    .page-header p  { font-size: .82rem; color: var(--text-muted); margin-top: 3px; }
+    .header-actions { display: flex; gap: 10px; }
+    .btn-draf {
+      border: 1.5px solid var(--border); background: var(--white);
+      border-radius: 9px; padding: 10px 20px;
+      font-size: .85rem; font-weight: 700; color: var(--text-dark);
+      cursor: pointer; transition: background .2s, border-color .2s; font-family: inherit;
+    }
+    .btn-draf:hover { background: var(--green-pale); border-color: var(--green-mid); }
+    .btn-kirim {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--green-dark); color: var(--white);
+      border: none; border-radius: 9px; padding: 10px 22px;
+      font-size: .85rem; font-weight: 700; cursor: pointer;
+      transition: background .2s, transform .15s; font-family: inherit;
+    }
+    .btn-kirim:hover { background: var(--green-mid); transform: translateY(-1px); }
+
+    /* ── 3-COLUMN LAYOUT ── */
+    .invoice-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr 300px;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 1100px) { .invoice-layout { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 760px)  { .invoice-layout { grid-template-columns: 1fr; } }
+
+    /* ── SECTION CARD ── */
+    .section-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; padding: 22px 22px 24px;
+    }
+    .section-title {
+      display: flex; align-items: center; gap: 8px;
+      font-size: .95rem; font-weight: 800; color: var(--text-dark);
+      margin-bottom: 20px;
+    }
+    .section-title i { color: var(--text-muted); font-size: 1rem; }
+
+    /* ── FORM FIELDS ── */
+    .field-group { margin-bottom: 16px; }
+    .field-group:last-child { margin-bottom: 0; }
+    .field-label {
+      display: block; font-size: .68rem; font-weight: 700;
+      letter-spacing: .09em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 7px;
+    }
+    .field-input, .field-select, .field-textarea {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 9px;
+      padding: 11px 14px; font-size: .87rem; font-family: inherit;
+      color: var(--text-dark); background: var(--white); outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field-input:focus, .field-select:focus, .field-textarea:focus {
+      border-color: var(--green-mid);
+      box-shadow: 0 0 0 3px rgba(31,122,82,.08);
+    }
+    .field-input::placeholder, .field-textarea::placeholder { color: #c0d0ca; }
+    .field-textarea { resize: vertical; min-height: 88px; }
+    .field-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%236b8a7a' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+      padding-right: 32px; cursor: pointer;
+    }
+    /* invoice number pre-filled */
+    .field-input.prefilled { color: var(--green-mid); font-weight: 700; }
+
+    /* ── RINGKASAN (right column) ── */
+    .ringkasan-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; padding: 22px;
+    }
+    .ringkasan-title { font-size: .95rem; font-weight: 800; margin-bottom: 18px; }
+    .ringkasan-row {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 10px;
+    }
+    .ringkasan-row .label { font-size: .85rem; color: var(--text-muted); }
+    .ringkasan-row .value { font-size: .88rem; font-weight: 700; }
+    .ringkasan-divider { height: 1px; background: var(--border); margin: 14px 0; }
+    .total-label { font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .total-value { font-size: 1.75rem; font-weight: 800; color: var(--green-mid); }
+    .catatan-label { font-size: .68rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 7px; margin-top: 18px; }
+    .info-box {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: var(--green-pale); border-radius: 10px;
+      padding: 12px 14px; margin-top: 16px;
+    }
+    .info-box i { color: var(--green-mid); font-size: .95rem; flex-shrink: 0; margin-top: 1px; }
+    .info-box p { font-size: .78rem; color: var(--text-muted); line-height: 1.55; }
+
+    /* ── DAFTAR PRODUK ── */
+    .produk-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+    }
+    .produk-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 22px 0;
+    }
+    .cek-stok-btn {
+      display: flex; align-items: center; gap: 7px;
+      border: 1.5px solid var(--border); background: var(--white);
+      border-radius: 8px; padding: 7px 14px;
+      font-size: .8rem; font-weight: 700; color: var(--text-dark);
+      cursor: pointer; transition: background .18s, border-color .18s; font-family: inherit;
+    }
+    .cek-stok-btn:hover { background: var(--green-pale); border-color: var(--green-mid); }
+
+    .prod-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+    .prod-table thead tr { background: var(--bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .prod-table thead th {
+      padding: 11px 22px; font-size: .68rem; font-weight: 700;
+      letter-spacing: .09em; text-transform: uppercase; color: var(--text-muted);
+    }
+    .prod-table tbody tr { border-bottom: 1px solid #f0f5f2; transition: background .15s; }
+    .prod-table tbody tr:hover { background: #f8fbf9; }
+    .prod-table td { padding: 14px 22px; font-size: .87rem; vertical-align: middle; }
+
+    /* Editable cells */
+    .cell-input {
+      border: none; outline: none; background: transparent;
+      font-family: inherit; font-size: .87rem; color: var(--text-dark);
+      width: 100%; min-width: 120px;
+    }
+    .cell-input::placeholder { color: #c0d0ca; font-style: italic; }
+    .cell-input:focus {
+      background: var(--green-pale); border-radius: 6px;
+      padding: 4px 8px; margin: -4px -8px;
+    }
+    .cell-number {
+      border: none; outline: none; background: transparent;
+      font-family: inherit; font-size: .87rem; color: var(--text-dark);
+      width: 60px; text-align: center;
+    }
+    .cell-number:focus { background: var(--green-pale); border-radius: 6px; padding: 4px 6px; margin: -4px -6px; }
+    .td-total-val { font-weight: 700; color: var(--text-dark); }
+    .td-total-val.zero { color: #c0d0ca; }
+
+    /* Delete btn */
+    .del-btn {
+      width: 30px; height: 30px; border-radius: 7px;
+      border: 1.5px solid #fdd; background: #fff8f8;
+      display: flex; align-items: center; justify-content: center;
+      color: #e53935; font-size: .85rem; cursor: pointer;
+      transition: background .18s; flex-shrink: 0;
+    }
+    .del-btn:hover { background: #fde8e8; }
+
+    /* Tambah item */
+    .tambah-row {
+      display: flex; justify-content: center;
+      padding: 16px 22px 20px;
+      border-top: 1px solid #f0f5f2;
+    }
+    .btn-tambah-item {
+      display: flex; align-items: center; gap: 7px;
+      border: none; background: none;
+      font-size: .88rem; font-weight: 700; color: var(--green-main);
+      cursor: pointer; font-family: inherit; transition: color .18s;
+    }
+    .btn-tambah-item:hover { color: var(--green-dark); }
+    .btn-tambah-item i { font-size: 1rem; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <h2>Kelolain</h2>
+    <span>Business Management</span>
+  </div>
+
+  <nav class="nav-menu">
+    <a href="kelolain-dashboard.html" class="nav-item">
+      <i class="bi bi-grid-1x2-fill"></i> Dashboard
+    </a>
+    <a href="kelolain-laporan.html" class="nav-item">
+      <i class="bi bi-bar-chart-line-fill"></i> Laporan
+    </a>
+    <a href="kelolain-transaksi.html" class="nav-item active">
+      <i class="bi bi-receipt"></i> Riwayat Transaksi
+    </a>
+    <a href="kelolain-produk.html" class="nav-item">
+      <i class="bi bi-box-seam-fill"></i> Produk
+    </a>
+    <a href="#" class="nav-item">
+      <i class="bi bi-person-circle"></i> Profile
+    </a>
+  </nav>
+
+  <div style="flex:1;"></div>
+
+  <div class="upgrade-card">
+    <div class="upgrade-label">Tingkatkan Bisnis</div>
+    <h6>Paket Enterprise kini tersedia!</h6>
+    <button class="btn-upgrade">Upgrade Plan</button>
+  </div>
+
+  <div class="nav-divider"></div>
+  <div class="nav-bottom">
+    <a href="#" class="nav-item"><i class="bi bi-gear"></i> Settings</a>
+    <a href="kelolain-login.html" class="nav-item" style="color:#c0392b;"><i class="bi bi-box-arrow-right"></i> Logout</a>
+  </div>
+</aside>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-right">
+      <div class="topbar-icon"><i class="bi bi-bell"></i></div>
+      <div class="topbar-icon"><i class="bi bi-gear"></i></div>
+      <div class="topbar-divider"></div>
+      <div class="user-info">
+        <div class="name">Josep Abduloh</div>
+        <div class="role">Penjual</div>
+      </div>
+      <div class="avatar">JA</div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <a href="kelolain-transaksi.html" class="back-btn">
+          <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+          <h1>Buat Invoice Baru</h1>
+          <p>Kelola detail transaksi dengan profesional</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-draf">Simpan Draf</button>
+        <button class="btn-kirim">
+          <i class="bi bi-send-fill"></i> Kirim Invoice
+        </button>
+      </div>
+    </div>
+
+    <!-- 3-column layout -->
+    <div class="invoice-layout">
+
+      <!-- ── Col 1: Informasi Pelanggan ── -->
+      <div class="section-card">
+        <div class="section-title">
+          <i class="bi bi-person"></i> Informasi Pelanggan
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Nama Pelanggan</label>
+          <input type="text" class="field-input" placeholder="Masukan Nama Pelanggan" id="namaPelanggan"/>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Metode Pembayaran</label>
+          <select class="field-select" id="metodePembayaran">
+            <option value="" disabled selected>Metode pembayaran</option>
+            <option>EDC</option>
+            <option>QRIS</option>
+            <option>TUNAI</option>
+            <option>Transfer Bank</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <input type="email" class="field-input" placeholder="email@contoh.com" id="emailPelanggan"/>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Alamat Penagihan</label>
+          <textarea class="field-textarea" placeholder="Jl. Sudirman No. 123..." id="alamat"></textarea>
+        </div>
+      </div>
+
+      <!-- ── Col 2: Detail Invoice ── -->
+      <div class="section-card">
+        <div class="section-title">
+          <i class="bi bi-file-earmark-text"></i> Detail Invoice
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Nomor Invoice</label>
+          <input type="text" class="field-input prefilled" value="INV/2023/10/0042" id="nomorInvoice"/>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Tanggal Invoice</label>
+          <input type="date" class="field-input" value="2026-06-06" id="tglInvoice"/>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Jatuh Tempo</label>
+          <input type="date" class="field-input" value="2026-07-06" id="jatuhTempo"/>
+        </div>
+      </div>
+
+      <!-- ── Col 3: Ringkasan Invoice ── -->
+      <div class="ringkasan-card">
+        <div class="ringkasan-title">Ringkasan Invoice</div>
+
+        <div class="ringkasan-row">
+          <span class="label">Subtotal</span>
+          <span class="value" id="subtotalDisplay">Rp 550.000</span>
+        </div>
+        <div class="ringkasan-row">
+          <span class="label">Diskon</span>
+          <span class="value">Rp 0</span>
+        </div>
+        <div class="ringkasan-row">
+          <span class="label">Pajak (0%)</span>
+          <span class="value">Rp 0</span>
+        </div>
+
+        <div class="ringkasan-divider"></div>
+
+        <div class="total-label">Total Keseluruhan</div>
+        <div class="total-value" id="totalDisplay">Rp 550.000</div>
+
+        <div class="catatan-label">Catatan</div>
+        <textarea class="field-textarea" placeholder="Terima kasih atas kerja samanya..." style="font-size:.83rem; min-height:72px;"></textarea>
+
+        <div class="info-box">
+          <i class="bi bi-info-circle-fill"></i>
+          <p>Reminder pembayaran otomatis akan dikirimkan H-3 sebelum jatuh tempo.</p>
+        </div>
+      </div>
+
+    </div><!-- /invoice-layout -->
+
+    <!-- ── Daftar Produk ── -->
+    <div class="produk-card">
+      <div class="produk-header">
+        <div class="section-title" style="margin-bottom:0;">
+          <i class="bi bi-list-ul"></i> Daftar Produk
+        </div>
+        <button class="cek-stok-btn">
+          <i class="bi bi-box-seam"></i> Cek Stok
+        </button>
+      </div>
+
+      <table class="prod-table">
+        <thead>
+          <tr>
+            <th>Nama Produk</th>
+            <th style="text-align:center;">QTY</th>
+            <th>Harga Satuan</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="produkTableBody">
+          <!-- Row 1 (existing) -->
+          <tr>
+            <td><input type="text" class="cell-input prod-name" value="Kopi" placeholder="Masukkan nama produk..."/></td>
+            <td style="text-align:center;"><input type="number" class="cell-number prod-qty" value="1" min="0"/></td>
+            <td><input type="text" class="cell-input prod-price" value="550000" placeholder="0"/></td>
+            <td class="td-total-val row-total">Rp 550.000</td>
+            <td><button class="del-btn" onclick="deleteRow(this)"><i class="bi bi-trash3"></i></button></td>
+          </tr>
+          <!-- Row 2 (empty) -->
+          <tr>
+            <td><input type="text" class="cell-input prod-name" value="" placeholder="Masukkan nama produk..."/></td>
+            <td style="text-align:center;"><input type="number" class="cell-number prod-qty" value="0" min="0"/></td>
+            <td><input type="text" class="cell-input prod-price" value="0" placeholder="0"/></td>
+            <td class="td-total-val row-total zero">Rp 0</td>
+            <td><button class="del-btn" onclick="deleteRow(this)"><i class="bi bi-trash3"></i></button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="tambah-row">
+        <button class="btn-tambah-item" onclick="addRow()">
+          <i class="bi bi-plus-circle"></i> Tambah Item Produk
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // ── Format rupiah
+  function fmt(n) {
+    return 'Rp ' + Math.max(0, n).toLocaleString('id-ID');
+  }
+
+  // ── Recalculate totals
+  function recalc() {
+    let subtotal = 0;
+    document.querySelectorAll('#produkTableBody tr').forEach(row => {
+      const qty   = parseFloat(row.querySelector('.prod-qty')?.value)   || 0;
+      const price = parseFloat(row.querySelector('.prod-price')?.value) || 0;
+      const total = qty * price;
+      subtotal += total;
+      const td = row.querySelector('.row-total');
+      if (td) {
+        td.textContent = fmt(total);
+        td.classList.toggle('zero', total === 0);
+      }
+    });
+    document.getElementById('subtotalDisplay').textContent = fmt(subtotal);
+    document.getElementById('totalDisplay').textContent    = fmt(subtotal);
+  }
+
+  // ── Listen on all input changes
+  document.getElementById('produkTableBody').addEventListener('input', recalc);
+
+  // ── Add new row
+  function addRow() {
+    const tbody = document.getElementById('produkTableBody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="text"   class="cell-input prod-name"  value="" placeholder="Masukkan nama produk..."/></td>
+      <td style="text-align:center;"><input type="number" class="cell-number prod-qty"   value="0" min="0"/></td>
+      <td><input type="text"   class="cell-input prod-price" value="0" placeholder="0"/></td>
+      <td class="td-total-val row-total zero">Rp 0</td>
+      <td><button class="del-btn" onclick="deleteRow(this)"><i class="bi bi-trash3"></i></button></td>
+    `;
+    tbody.appendChild(tr);
+    tr.querySelector('.prod-name').focus();
+  }
+
+  // ── Delete row
+  function deleteRow(btn) {
+    const row = btn.closest('tr');
+    if (document.querySelectorAll('#produkTableBody tr').length > 1) {
+      row.remove();
+      recalc();
+    }
+  }
+
+  // ── Auto-generate invoice number
+  function genInvoiceNo() {
+    const d = new Date();
+    const seq = String(Math.floor(Math.random() * 9000) + 1000);
+    return `INV/${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${seq}`;
+  }
+  document.getElementById('nomorInvoice').value = genInvoiceNo();
+
+  // ── Initial calc
+  recalc();
+
+  // ── Kirim Invoice
+  document.querySelector('.btn-kirim').addEventListener('click', () => {
+    const nama = document.getElementById('namaPelanggan').value.trim();
+    if (!nama) {
+      document.getElementById('namaPelanggan').focus();
+      document.getElementById('namaPelanggan').style.borderColor = '#e53935';
+      setTimeout(() => document.getElementById('namaPelanggan').style.borderColor = '', 2000);
+      return;
+    }
+    alert('Invoice berhasil dikirim!');
+    window.location.href = 'kelolain-transaksi.html';
+  });
+
+  // ── Simpan Draf
+  document.querySelector('.btn-draf').addEventListener('click', () => {
+    alert('Draft tersimpan!');
+  });
+</script>
+</body>
+</html>
